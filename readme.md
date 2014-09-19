@@ -16,7 +16,7 @@ It is not as featured as TGMPA, currently it does not support Bulk activation/in
   Each `SWP_Depender` instance can have multiple dependers, each with its own set of plugin dependencies
 
 
-* Depender based Notidications
+* Depender based Notifications
 
   Each depender has its own notification, so user can easily see which dependencies belong to which depender.
 
@@ -24,6 +24,7 @@ It is not as featured as TGMPA, currently it does not support Bulk activation/in
 * Display privately hosted plugins Readme with Thickbox
 
   via `wp_json_readme` option that links to json output of plugins readme file.
+
 
 
 ## Custom instance ##
@@ -89,4 +90,15 @@ function register_dependencies( $dependers ) {
 }
 ```
 
+
+## Uninstallation ##
+
+```php
+function my_deactivate() {
+	global $swp_depender;
+	$swp_depender->delete_depender_options( 'depender-id' );
+}
+register_deactivation_hook( __FILE__, 'my_deactivate' );
+
+```
 

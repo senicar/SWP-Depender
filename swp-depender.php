@@ -83,3 +83,21 @@ function custom_depender_register( $dependers ) {
 
 	return $dependers;
 }
+
+/* -------------------------------------------------------*
+** Activate / Deactivate
+** -------------------------------------------------------*/
+
+// TODO : Clear all swp_depender settings, they use update_user_option which is multisite oriented
+
+function swp_depender_activate() {
+}
+
+register_activation_hook( __FILE__, 'swp_depender_activate' );
+
+function swp_depender_deactivate() {
+	global $swp_depender;
+	$swp_depender->delete_depender_options('my_plugin');
+	$swp_depender->delete_depender_options('my_plugin_slug2');
+}
+register_deactivation_hook( __FILE__, 'swp_depender_deactivate' );

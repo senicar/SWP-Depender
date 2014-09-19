@@ -28,6 +28,9 @@ if( ! class_exists('SWP_Depender') ) {
 
 		function __construct( $id = '', $config = array() ) {
 
+			// works only on admin pages
+			if( ! is_admin() ) return;
+
 			if( $id )
 				$this->id = $id;
 			else
@@ -548,6 +551,40 @@ if( ! class_exists('SWP_Depender') ) {
 
 
 		/* -------------------------------------------------------*
+		** User options
+		** -------------------------------------------------------*/
+
+		function delete_depender_options($depender_id) {
+			global $wpdb;
+			$wpdb->delete( $wpdb->usermeta, array('meta_key' => "{$this->id}_{$depender_id}") );
+		}
+
+		function update_user_option($depender_id, $option, $value) {
+			$this->set_user_option($depender_id, $option, $value);
+		}
+
+		function set_user_option($depender_id, $option, $value) {
+			//$options = get_user_option("{$this->id}");
+			$options = get_user_meta(get_current_user_id(), "{$this->id}", true);
+
+			$options[$option] = $value;
+
+			//update_user_option(get_current_user_id(), "{$this->id}", $options);
+			update_user_meta(get_current_user_id(), "{$this->id}_{$depender_id}", $options);
+		}
+
+		function get_user_option($depender_id, $option) {
+			//$options = get_user_option("{$this->id}");
+			$options = get_user_meta(get_current_user_id(), "{$this->id}_{$depender_id}", true);
+
+			if( isset($options[$option]) )
+				return $options[$option];
+
+			return false;
+		}
+
+
+		/* -------------------------------------------------------*
 		** Notices
 		** -------------------------------------------------------*/
 
@@ -558,9 +595,7 @@ if( ! class_exists('SWP_Depender') ) {
 
 			if( isset($_GET[$this->id . '_dismiss']) && isset($this->dependers[ $_GET[$this->id . '_dismiss'] ]) ) {
 				$depender_id = $_GET[$this->id . '_dismiss'];
-				$user_meta = get_user_meta(get_current_user_id(), "{$this->id}", true);
-				$user_meta['dismiss'][$depender_id] = true;
-				update_user_meta(get_current_user_id(), "{$this->id}", $user_meta);
+				$this->update_user_option($depender_id, 'dismiss', true);
 			}
 		}
 
@@ -577,11 +612,11 @@ if( ! class_exists('SWP_Depender') ) {
 
 			$output = '';
 
-			$user_meta = get_user_meta(get_current_user_id(), "{$this->id}", true);
-
 			foreach( $this->dependers as $depender_id => $depender ) {
 
-				if( isset($user_meta['dismiss']) && array_key_exists($depender_id, $user_meta['dismiss']) )
+				$dismissed = $this->get_user_option($depender_id, 'dismiss');
+
+				if( $dismissed )
 					continue;
 
 				if( ! $this->has_unresolved_dependencies( $depender_id ) ) continue;
