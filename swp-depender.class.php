@@ -650,6 +650,10 @@ if( ! class_exists('SWP_Depender') ) {
 		** THICKBOX
 		** -------------------------------------------------------*/
 
+		/**
+		 * Generate thickbox link for plugins "View details" or "Readme"
+		 **/
+
 		function thickbox_plugin_info_link( $plugin ) {
 			$slug = $plugin['slug'];
 
@@ -658,7 +662,7 @@ if( ! class_exists('SWP_Depender') ) {
 				$url = add_query_arg(
 					array(
 						'tab'       => 'plugin-information',
-						'plugin'    => $plugin['ID'],
+						'plugin'    => $plugin['slug'],
 						'depender_id' => $plugin['depender_id'],
 						'TB_iframe' => 'true',
 						'width'     => '640',
