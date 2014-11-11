@@ -404,6 +404,8 @@ if( ! class_exists('SWP_Depender') ) {
 		function plugin_action_links( $actions, $plugin_id, $plugin_data, $context ) {
 			if( ! $screen = $this->is_manage_screen() ) return $actions;
 
+			$plugin_file = $plugin_data['file_path'];
+
 			if ( $screen->in_admin( 'network' ) )
 				$is_active = is_plugin_active_for_network( $plugin_file );
 			else
@@ -530,11 +532,11 @@ if( ! class_exists('SWP_Depender') ) {
 
 						if( ! $this->has_unresolved_dependencies($depender_id) || ! $wp_list_table->items ) continue;
 
-						echo sprintf('<h3 id="%s">%s</h3>',$key, $depender['name']);
+						echo sprintf('<h3 id="%s">%s</h3>',$depender_id, $depender['name']);
 
 						echo sprintf( '<form action="%s" method="POST">',add_query_arg('page', $this->id, admin_url('plugins.php')) );
-						echo sprintf('<input type="hidden" name="%s_depender" value="%s" />', $this->id, $key);
-						echo sprintf('<input type="hidden" name="%s_bulk_actions" value="%s" />', $this->id, $key);
+						echo sprintf('<input type="hidden" name="%s_depender" value="%s" />', $this->id, $depender_id);
+						echo sprintf('<input type="hidden" name="%s_bulk_actions" value="%s" />', $this->id, $depender_id);
 
 						$wp_list_table->display();
 
@@ -543,7 +545,7 @@ if( ! class_exists('SWP_Depender') ) {
 
 					endforeach;
 
-					$this->clear_dependerdata;
+					$this->clear_dependerdata();
 				?>
 				</div>
 				<?php
