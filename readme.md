@@ -35,7 +35,7 @@ A global `$swp_depender` instance is created but you can create your own branded
 require_once 'swp-depender.class.php';
 
  $custom_depender = new SWP_Depender(
- 	$id = 'custom_depender',
+ 	$id = 'depender-id',
  	$config = array(
  		'manage_dependencies_page_title' => __('Custom Manage dependencies'),
  		'manage_dependencies_menu_title' => __('Custom Manage dependencies'),
@@ -53,9 +53,10 @@ Default: `swp_depender_register_dependers`
 
 ```php
 add_filter('swp_depender_register_dependers', 'register_dependencies');
+
 function register_dependencies( $dependers ) {
 
-	$dependers['my_plugin'] = array(
+	$dependers['my_plugin_id'] = array(
 			'name' => 'My Plugin',
 			'dependencies' => array(
 				array(
@@ -73,7 +74,7 @@ function register_dependencies( $dependers ) {
 				),
 			);
 
-	$dependers['my_plugin_slug2'] = array(
+	$dependers['my_plugin_id2'] = array(
 			'name' => 'My Plugin 2',
 			'dependencies' => array(
 				array(
@@ -95,10 +96,9 @@ function register_dependencies( $dependers ) {
 
 ```php
 function my_deactivate() {
-	global $swp_depender;
-	$swp_depender->delete_depender_options( 'depender-id' );
+	global $swp_depender; // or *$custom_depender* in case you create your own instance
+	$swp_depender->delete_depender_options( 'my_plugin_id' );
 }
 register_deactivation_hook( __FILE__, 'my_deactivate' );
 
 ```
-
